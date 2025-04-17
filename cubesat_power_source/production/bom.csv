@@ -1,0 +1,10 @@
+﻿Designator,Footprint,Quantity,Value,LCSC Part #
+"220pF1, 220pF2, 220pF3, 220pF4, 220pF5",C_Disc_D4.3mm_W1.9mm_P5.00mm,5,C,
+"J1, J2, J3, J4, J5, J6",PinHeader_1x01_P2.54mm_Vertical,6,Conn_01x01_Pin,
+"Q1, Q2, Q3, Q4, Q5",TO-92_Inline,5,2N3904,
+"R1, R10, R14, R18, R6",0.4_pitch_resistor,5,22K,
+"R11, R15, R19, R3, R7",0.4_pitch_resistor,5,100K,
+"R12, R16, R20, R4, R8",0.4_pitch_resistor,5,4.7M,
+"R13, R17, R2, R5, R9",0.4_pitch_resistor,5,10K,
+U1,xp_power_dc_dc_converter,1,~,
+U2,PinHeader_1x07_P2.54mm_Horizontal,1,~,
