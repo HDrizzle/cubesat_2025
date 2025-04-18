@@ -5,11 +5,13 @@
   51 -> SD Card adapter
   52 -> SD Card adapter
   53 -> SD Card adapter
+  A0 -> Gas sensor
+  A1 -> UV sensor
 */
 #include <SD.h>
 #include <SPI.h>
 #include <Arduino.h>
-#include <Adafruit_MPL3115A2.h>
+#include <Adafruit_MPL3115A2.h>// Need to install this with library manager
 Adafruit_MPL3115A2 baro;
 unsigned char buffer[64];// buffer array for data receive over serial port
 int count=0; //something for the GPS sensor
