@@ -1,8 +1,22 @@
 /* MSSM Cubesat team 2025, adapted from 2024 version
-Each of the 5 geiger counters will be attached to an interrupt pin to trigger a count in a corresponding number in `geiger_counts`
+Each of the 5 geiger counters will be attached to an input pin, they will also be OR'ed together on aninterrput to increment a count in a corresponding number in `geiger_counts` when any of them trigger
 Arduino Mega interrupts:
   2, 3, 18, 19, 20, 21
+  There is one I2C port using pins 20, 21 so those cannot be used, limiting the number of interrupts, and therefor geiger counter to 4
   https://docs.arduino.cc/language-reference/en/functions/external-interrupts/attachInterrupt/
+Pin assignments
+  22 -> Geiger 0
+  23 -> Geiger 1
+  24 -> Geiger 2
+  25 -> Geiger 3
+  26 -> Geiger 4
+  18 -> Geiger interrupt
+  20 -> I2C SDA for altimeter
+  21 -> I2C SCL for altimeter
+  50 -> SD Card adapter
+  51 -> SD Card adapter
+  52 -> SD Card adapter
+  53 -> SD Card adapter
 */
 #include <SD.h>
 #include <SPI.h>
@@ -53,11 +67,7 @@ void setup() {
     Serial.println("File opened");
   }
   // Setup geiger counter interrupts
-  attachInterrupt(digitalPinToInterrupt(3), counter_ISR_0, RISING);// Either rising or falling, doesn't matter
-  attachInterrupt(digitalPinToInterrupt(18), counter_ISR_1, RISING);// Either rising or falling, doesn't matter
-  attachInterrupt(digitalPinToInterrupt(19), counter_ISR_2, RISING);// Either rising or falling, doesn't matter
-  attachInterrupt(digitalPinToInterrupt(20), counter_ISR_3, RISING);// Either rising or falling, doesn't matter
-  attachInterrupt(digitalPinToInterrupt(21), counter_ISR_4, RISING);// Either rising or falling, doesn't matter
+  attachInterrupt(digitalPinToInterrupt(18), counter_ISR, RISING);// Either rising or falling, doesn't matter
 }
 
 void loop() {
@@ -105,18 +115,6 @@ void clearBufferArray()
 }
 
 // Geiger counter ISRs
-void counter_ISR_0() {
-  geiger_counts[0] += 1;
-}
-void counter_ISR_1() {
-  geiger_counts[1] += 1;
-}
-void counter_ISR_2() {
-  geiger_counts[2] += 1;
-}
-void counter_ISR_3() {
-  geiger_counts[3] += 1;
-}
-void counter_ISR_4() {
-  geiger_counts[4] += 1;
+void counter_ISR() {
+  
 }

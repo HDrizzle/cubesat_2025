@@ -1,3 +1,11 @@
+/* Pin assignments
+  20 -> I2C SDA for altimeter
+  21 -> I2C SCL for altimeter
+  50 -> SD Card adapter
+  51 -> SD Card adapter
+  52 -> SD Card adapter
+  53 -> SD Card adapter
+*/
 #include <SD.h>
 #include <SPI.h>
 #include <Arduino.h>
