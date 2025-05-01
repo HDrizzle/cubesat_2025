@@ -17,11 +17,20 @@ Pin assignments
   51 -> SD Card adapter
   52 -> SD Card adapter
   53 -> SD Card adapter
+CSV columns (TODO - units)
+  | Pressure | Temp | Geiger 0 | Geiger 1 | Geiger 2 | Geiger 3 | Geiger 4 |
 */
 #include <SD.h>
 #include <SPI.h>
 #include <Arduino.h>
 #include <Adafruit_MPL3115A2.h>
+
+#define GEIGER_0 22
+#define GEIGER_1 23
+#define GEIGER_2 24
+#define GEIGER_3 25
+#define GEIGER_4 26
+#define GEIGER_INTERRUPT 18
 
 #define DATA_FILENAME "data.csv"
 
@@ -31,7 +40,7 @@ unsigned char buffer[64];// buffer array for data receive over serial port
 int count=0; //something for the GPS sensor
 File myFile; //data being stored to SD card
 const int chipSelect = 53; //SD card port
-volatile uint32_t geiger_counts[5] = {0, 0, 0, 0, 0};// Declared as volatile because it will be modified by ISRs
+volatile uint32_t geiger_counts[5] = {0, 0, 0, 0, 0};// Declared as volatile because it will be modified by the ISR
 // Timing
 unsigned long data_collect_period_ms = 15000;// 15,000 millisecs, 15 secs
 unsigned long t_last_data_collect_ms = millis();
@@ -66,8 +75,8 @@ void setup() {
   if (myFile){
     Serial.println("File opened");
   }
-  // Setup geiger counter interrupts
-  attachInterrupt(digitalPinToInterrupt(18), counter_ISR, RISING);// Either rising or falling, doesn't matter
+  // Setup geiger counter interrupt (ISR = Interrupt Service Routine)
+  attachInterrupt(digitalPinToInterrupt(GEIGER_INTERRUPT), counter_ISR, FALLING);
 }
 
 void loop() {
@@ -93,16 +102,14 @@ void loop() {
       myFile.close();
       Serial.println("Closed");
     }
-    else if (millis() > 900000) { //15 minute start delay until data collection
-      Serial.println("Writing test to csv.txt");
-      Serial.println("yay");
-      myFile.println(pressure);
-      myFile.println(altitude);
-      myFile.println(temperature);
-    }
+    Serial.println("Writing test to csv.txt");
+    Serial.println("yay");
+    myFile.println(pressure);
+    myFile.println(altitude);
+    myFile.println(temperature);
   }
   // Delay
-  delay(min(data_collect_period_ms - (millis() - t_last_data_collect_ms), data_collect_period_ms));// Take minimum of calculated delay and default delay. In case the loop for some reason takes too long, this won't be hung up by an unsigned integer undeflow
+  delay(min(data_collect_period_ms - (millis() - t_last_data_collect_ms), data_collect_period_ms));// Take minimum of calculated delay and default delay. In case the loop for some reason takes too long, this won't be hung up by an unsigned integer underflow
   t_last_data_collect_ms = millis();
 }
 
@@ -114,7 +121,13 @@ void clearBufferArray()
   }               
 }
 
-// Geiger counter ISRs
+// Geiger counter ISR
 void counter_ISR() {
-  
+  // The signal goes low when the tube breaks down, then back up, so the one that is low is the one to count
+  // If two pulses occur very glose, the second one (and possible the first one) will be double-counted, however the pulses are so infrequent and short that I'm not worried
+  geiger_counts[0] += !digitalRead(GEIGER_0);
+  geiger_counts[1] += !digitalRead(GEIGER_1);
+  geiger_counts[2] += !digitalRead(GEIGER_2);
+  geiger_counts[3] += !digitalRead(GEIGER_3);
+  geiger_counts[4] += !digitalRead(GEIGER_4);
 }
