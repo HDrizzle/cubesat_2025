@@ -13,10 +13,10 @@ Pin assignments
   18 -> Geiger interrupt
   20 -> I2C SDA for altimeter
   21 -> I2C SCL for altimeter
-  50 -> SD Card adapter
-  51 -> SD Card adapter
-  52 -> SD Card adapter
-  53 -> SD Card adapter
+  50 -> SD Card adapter (MISO)
+  51 -> SD Card adapter (MOSI)
+  52 -> SD Card adapter (SCLK)
+  53 -> SD Card adapter (chip select / CS)
 CSV columns (TODO - units)
   | Pressure | Temp | Geiger 0 | Geiger 1 | Geiger 2 | Geiger 3 | Geiger 4 |
 */
@@ -42,7 +42,7 @@ File myFile; //data being stored to SD card
 const int chipSelect = 53; //SD card port
 volatile uint32_t geiger_counts[5] = {0, 0, 0, 0, 0};// Declared as volatile because it will be modified by the ISR
 // Timing
-unsigned long data_collect_period_ms = 15000;// 15,000 millisecs, 15 secs
+unsigned long data_collect_period_ms = 5000;// 15,000 millisecs, 15 secs
 unsigned long t_last_data_collect_ms = millis();
 
 void setup() {
@@ -104,9 +104,22 @@ void loop() {
     }
     Serial.println("Writing test to csv.txt");
     Serial.println("yay");
-    myFile.println(pressure);
-    myFile.println(altitude);
-    myFile.println(temperature);
+    myFile.print(pressure);
+    myFile.print(",");
+    myFile.print(altitude);
+    myFile.print(",");
+    myFile.print(temperature);
+    myFile.print(",");
+    myFile.print(geiger_counts[0]);
+    myFile.print(",");
+    myFile.print(geiger_counts[1]);
+    myFile.print(",");
+    myFile.print(geiger_counts[2]);
+    myFile.print(",");
+    myFile.print(geiger_counts[3]);
+    myFile.print(",");
+    myFile.println(geiger_counts[4]);
+    myFile.flush();
   }
   // Delay
   delay(min(data_collect_period_ms - (millis() - t_last_data_collect_ms), data_collect_period_ms));// Take minimum of calculated delay and default delay. In case the loop for some reason takes too long, this won't be hung up by an unsigned integer underflow

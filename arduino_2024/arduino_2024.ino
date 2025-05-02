@@ -1,6 +1,4 @@
 /* Pin assignments
-  20 -> I2C SDA for altimeter
-  21 -> I2C SCL for altimeter
   50 -> SD Card adapter (MISO)
   51 -> SD Card adapter (MOSI)
   52 -> SD Card adapter (SCLK)
@@ -90,11 +88,13 @@ if (Serial1.available())                     // if date is coming from software 
       gasDen = analogRead(gasPin);
       uvRad = analogRead(uvPin);
       Serial.println("yay");
-      myFile.println(gasDen);
+      myFile.print(gasDen);
+      myFile.print(",");
       myFile.println(uvRad);
       /*myFile.println(pressure);
       myFile.println(altitude);
       myFile.println(temperature);*/
+      myFile.flush();
     }
   }
   // Delay
